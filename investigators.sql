@@ -598,3 +598,16 @@ CREATE INDEX "IX1_Investigators"
   USING btree
   (id_application, id_person);
 
+alter table "Grants".investigators add column short_role varchar(3);
+update "Grants".investigators set short_role = 'ECI' where tx_role = 'EXT_CHIEF_INVESTIGATOR';
+update "Grants".investigators set short_role = 'SCI' where tx_role = 'STUD_CHIEF_INVESTIGATOR';
+update "Grants".investigators set short_role = 'CI' where tx_role = 'CHIEF_INVESTIGATOR';
+update "Grants".investigators set short_role = 'DR' where tx_role = 'DELEGATED_RESEARCHER';
+update "Grants".investigators set short_role = 'EA' where tx_role = 'EXTERNAL_ADVISOR';
+update "Grants".investigators set short_role = 'HV' where tx_role = 'HONVISIT';
+update "Grants".investigators set short_role = 'PS' where tx_role = 'PRINCIPAL_SUPERVISOR';
+update "Grants".investigators set short_role = 'SR' where tx_role = 'STUDRES';
+update "Grants".investigators set short_role = 'UNK' where tx_role is null;
+commit;
+
+  
