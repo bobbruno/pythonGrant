@@ -79,5 +79,19 @@ def munge_data(df_orig):
     finalDf = pd.merge(finalDf, prcAussies, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, numPapers, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, grant_cats, left_index = True, right_index = True)
+    
+    #imputing ages with median
+    finalDf['Year.of.Birth.1'].fillna(finalDf['Year.of.Birth.1'].median(), inplace = True)
+    
+    #imputing missing papers with 0
+    finalDf['A..1'].fillna(0, inplace = True)
+    finalDf['A.1'].fillna(0, inplace = True)
+    finalDf['B.1'].fillna(0, inplace = True)
+    finalDf['C.1'].fillna(0, inplace = True)
+    
+    #imputing missing successful and unsuccessful grants with 0
+    finalDf['Number.of.Successful.Grant.1'].fillna(0, inplace = True)
+    finalDf['Number.of.Unsuccessful.Grant.1'].fillna(0, inplace = True)
+        
     del finalDf['Grant.Application.ID_y']
     return finalDf
