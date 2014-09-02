@@ -70,7 +70,7 @@ def munge_data(df_orig):
            u'Home.Language.1', u'No..of.Years.in.Uni.at.Time.of.Grant.1', u'Number.of.Successful.Grant.1',
            u'Number.of.Unsuccessful.Grant.1', u'Role.1', u'Sponsor.Code', u'With.PHD.1', u'Year.of.Birth.1',
            u'SEO.Code.4', u'SEO.Code.5', u'SEO.Code.1', u'SEO.Code.2', u'SEO.Code.3', u'RFCD.Code.1',
-           u'RFCD.Code.2', u'RFCD.Code.3', u'RFCD.Code.4', u'RFCD.Code.5'], inplace = True, axis = 1)
+           u'RFCD.Code.2', u'RFCD.Code.3', u'RFCD.Code.4', u'RFCD.Code.5', 'Grant.Category.Code'], inplace = True, axis = 1)
     df.drop_duplicates(inplace = True)
     df.set_index('Grant.Application.ID', inplace=True)
     
@@ -79,5 +79,5 @@ def munge_data(df_orig):
     finalDf = pd.merge(finalDf, prcAussies, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, numPapers, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, grant_cats, left_index = True, right_index = True)
-    
+    del finalDf['Grant.Application.ID_y']
     return finalDf
