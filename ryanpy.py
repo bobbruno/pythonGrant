@@ -2,6 +2,8 @@
 
 import pandas as pd
 import numpy as np
+import time, datetime
+
 
 def get_tables(filename = '/home/bobbruno/Downloads/DSR/Kaggle Grants/sourcedata/raw.csv'):
     df_raw = pd.read_csv(filename)
@@ -94,4 +96,12 @@ def munge_data(df_orig):
     finalDf['Number.of.Unsuccessful.Grant.1'].fillna(0, inplace = True)
         
     del finalDf['Grant.Application.ID_y']
-    return finalDf
+    del finalDf['Grant.Application.ID_x']
+    finalDf['Proc.Start.Date'] = finalDf['Start.date'].apply(lambda x:
+                          time.mktime(datetime.datetime.strptime(x,'%d/%m/%y').timetuple()))
+    y = finalDf['Grant.Status'].values
+    del finalDf['Grant.Status']
+    del finalDf['Start.date']
+    x = finalDf.values
+
+    return x, y, finalDf
