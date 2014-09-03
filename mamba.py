@@ -3,6 +3,10 @@
 import pandas as pd
 import numpy as np
 import time, datetime
+from sklearn.grid_search import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 
 
 def get_tables(filename = '/home/bobbruno/Downloads/DSR/Kaggle Grants/sourcedata/raw.csv'):
@@ -99,9 +103,41 @@ def munge_data(df_orig):
     del finalDf['Grant.Application.ID_x']
     finalDf['Proc.Start.Date'] = finalDf['Start.date'].apply(lambda x:
                           time.mktime(datetime.datetime.strptime(x,'%d/%m/%y').timetuple()))
-    y = finalDf['Grant.Status'].values
-    del finalDf['Grant.Status']
-    del finalDf['Start.date']
-    x = finalDf.values
+   #splitting dataframe
+    mask = time_mask(finalDf)
+    finalDf_test = finalDf[mask]
+    finalDf_train = finalDf[-mask]
+    
+    #creating X, y splits for test and train dataframes
+    y_train = finalDf_train['Grant.Status'].values
+    del finalDf_train['Grant.Status']
+    del finalDf_train['Start.date']
+    X_train = finalDf_train.values
+    
+    y_test = finalDf_test['Grant.Status'].values
+    del finalDf_test['Grant.Status']
+    del finalDf_test['Start.date']
+    X_test = finalDf_test.values
+	
+    return X_train, y_train, X_test, y_test, finalDf_test, finalDf_train
 
-    return x, y, finalDf
+def time_mask(df, key = 'Proc.Start.Date', value = '01/01/08'):
+	t = time.mktime( datetime.datetime.strptime(value,'%d/%m/%y').timetuple())
+	return df[key] >= t
+
+def testing(X, y):
+	estimators = [('scale_predictors', StandardScaler()), 
+	('randomforests', RandomForestClassifier())]
+	clf = Pipeline(estimators)
+	params = dict(randomforests__max_depth=[5, 10, None], randomforests__n_estimators=[10, 50, 100])
+	grid_search = GridSearchCV(clf, param_grid=params)
+	grid_search.fit(X, y)
+	return grid_search
+
+def performance(results, param1, param2):
+	param1_vals = [x.parameters[param1] for x in results.grid_scores_]
+	param2_vals = [x.parameters[param2] for x in results.grid_scores_]
+	means = [x.mean_validation_score for x in results.grid_scores_]
+	df = pd.DataFrame(zip(param1_vals, param2_vals, means), columns = [param1, param2, 'means'])
+	df.fillna('None', inplace=True)
+	return pd.pivot_table(df, values = 'means' , index = param1, columns = param2)
