@@ -16,6 +16,47 @@ def get_tables(filename = '/home/bobbruno/Downloads/DSR/Kaggle Grants/sourcedata
     unique_investigators = investigators.drop_duplicates()
     return unique_investigators.sort('Grant.Application.ID') #[unique_investigators['Role.1'].isnull()==False].sort('Grant.Application.ID')
 
+def combine_columns(dfOrig, codeName = 'RFCD.Code.', prcName = 'RFCD.Percentage.', codeRange = 5, index = 'Grant.Application.ID'):
+    """ Goes through all codeNames + codeRange, , impute '99' to blanks, get_dummies on them, drops colums with code 0 and
+    add up each throughout the range."""
+    df = dfOrig.copy()
+    cleanDf = df[['{}{}'.format(codeName, i) for i in range(1, codeRange+1)]].fillna(990000) // 10000
+    cleanDf[index] = df[index]
+    dummyDf = []
+    for i in range(1, codeRange+1):
+        cleanDf['{}{}'.format(prcName, i)] = df['{}{}'.format(prcName, i)]
+        currDummy = cleanDf[[index] + ['{}{}'.format(codeName, i)]]
+        currDummy = pd.get_dummies(currDummy['{}{}'.format(codeName, i)], prefix = codeName)
+        currDummy[index] = cleanDf[index]
+        currDummy['{}{}'.format(prcName, i)] = cleanDf['{}{}'.format(prcName, i)]
+        currDummy = pd.groupby(currDummy, index)[currDummy.columns].max()
+        rows, cols = currDummy.shape
+        for k in range(rows):
+            j = [n for n in range(cols-2) if currDummy.ix[k+1].values[n] > 0]  # One and only one value shoud be found
+            if (len(j) > 0):
+                try:
+                    j = j[0]
+                    currDummy[currDummy.columns[j]].values[k] = currDummy['{}{}'.format(prcName, i)].values[k]
+                except IndexError:
+                    print k, j
+                    raise IndexError
+            else:
+                try:
+                    currDummy['{}_{}.0'.format(codeName, 99)].values[k] = 100
+                except IndexError:
+                    print k
+                    raise IndexError
+        del currDummy['{}{}'.format(prcName, i)]
+        dummyDf.append(currDummy)
+    currDummy = dummyDf[0]
+    for i in range(1, codeRange):
+        currDummy = currDummy + dummyDf[i]
+        currDummy[index] = dummyDf[i][index]
+        currDummy.fillna(0, inplace=True)
+    return currDummy
+        
+
+
 def munge_data(df_orig):
     df = df_orig.copy()
     del df['Person.ID.1']
