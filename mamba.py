@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import chi2, SelectKBest, f_classif
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.svm import LinearSVC
 
 def get_tables(filename = '/home/bobbruno/Downloads/DSR/Kaggle Grants/sourcedata/raw.csv'):
@@ -158,12 +158,14 @@ def testing(X, y):
 		('scale_predictors', StandardScaler()),
 		('feature_selector', LinearSVC(penalty='l1', dual=False)),
 		#('feature_selector', SelectKBest(score_func=f_classif)),
-		('randomforests', RandomForestClassifier())
+		('linearSVC', LinearSVC())
+		#('randomforests', RandomForestClassifier())
 		]
 	clf = Pipeline(estimators)
 	params = dict(
-		randomforests__max_depth=[5, 10, None], 
-		randomforests__n_estimators=[10, 50, 100], 
+		linearSVC__C=[0.1, 1, 10],
+		#randomforests__max_depth=[5, 10, None], 
+		#randomforests__n_estimators=[10, 50, 100], 
 		feature_selector__C=[0.1, 1, 10]
 		#feature_selector__score_func=[chi2],
 		#feature_selector__k=[5, 10, 'all'] 
