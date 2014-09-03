@@ -45,8 +45,6 @@ def combine_columns(dfOrig, codeName = 'SEO.Code.', prcName = 'SEO.Percentage.',
         currDummy[index] = dummyDf[i][index]
         currDummy.fillna(0, inplace=True)
     return currDummy
-        
-
 
 def munge_data(df_orig):
     df = df_orig.copy()
@@ -97,6 +95,8 @@ def munge_data(df_orig):
     df['SEO.Percentage.3'].fillna(df['SEO.Percentage.3'].mean(), inplace=True)
     df['SEO.Percentage.4'].fillna(df['SEO.Percentage.4'].mean(), inplace=True)
     df['SEO.Percentage.5'].fillna(df['SEO.Percentage.5'].mean(), inplace=True)
+    rfcds = combine_columns(df, 'RFCD.Code.', 'RFCD.Percentage.')
+    seos = combine_columns(df, 'SEO.Code.', 'SEO.Percentage.')
     
     # Get rid of everything we don't need
     # REMINDER - LATER COME BACK AND DEAL WITH DEPARTMENT, FACULTY, NO YEARS AT FACULTY, PHD, ETC
@@ -104,7 +104,7 @@ def munge_data(df_orig):
            u'Home.Language.1', u'No..of.Years.in.Uni.at.Time.of.Grant.1', u'Number.of.Successful.Grant.1',
            u'Number.of.Unsuccessful.Grant.1', u'Role.1', u'Sponsor.Code', u'With.PHD.1', u'Year.of.Birth.1',
            u'SEO.Code.4', u'SEO.Code.5', u'SEO.Code.1', u'SEO.Code.2', u'SEO.Code.3', u'RFCD.Code.1',
-           u'RFCD.Code.2', u'RFCD.Code.3', u'RFCD.Code.4', u'RFCD.Code.5', 'Grant.Category.Code'], inplace = True, axis = 1)
+           u'RFCD.Code.2', u'RFCD.Code.3', u'RFCD.Code.4', u'RFCD.Code.5', 'Grant.Category.Code', u'RFCD.Percentage.1', u'RFCD.Percentage.2', u'RFCD.Percentage.3', u'RFCD.Percentage.4', u'RFCD.Percentage.5', u'SEO.Percentage.1', u'SEO.Percentage.2', u'SEO.Percentage.3', u'SEO.Percentage.4', u'SEO.Percentage.5',], inplace = True, axis = 1)
     df.drop_duplicates(inplace = True)
     df.set_index('Grant.Application.ID', inplace=True)
     
@@ -113,6 +113,8 @@ def munge_data(df_orig):
     finalDf = pd.merge(finalDf, prcAussies, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, numPapers, left_index = True, right_index = True)
     finalDf = pd.merge(finalDf, grant_cats, left_index = True, right_index = True)
+    finalDf = pd.merge(finalDf, rfcds, left_index = True, right_index = True)
+    finalDf = pd.merge(finalDf, seos, left_index = True, right_index = True)
     
     #imputing ages with median
     finalDf['Year.of.Birth.1'].fillna(finalDf['Year.of.Birth.1'].median(), inplace = True)
