@@ -151,31 +151,6 @@ def munge_data(df_orig):
     return X_train, y_train, X_test, y_test, finalDf_test, finalDf_train
 
 def time_mask(df, key = 'Proc.Start.Date', value = '01/01/08'):
-<<<<<<< HEAD
-	t = time.mktime( datetime.datetime.strptime(value,'%d/%m/%y').timetuple())
-	return df[key] >= t
-
-def testing(X, y):
-	estimators = [
-		('scale_predictors', StandardScaler()),
-		('feature_selector', LinearSVC(penalty='l1', dual=False)),
-		#('feature_selector', SelectKBest(score_func=f_classif)),
-		('linearSVC', linearSVC())
-		#('randomforests', RandomForestClassifier())
-		]
-	clf = Pipeline(estimators)
-	params = dict(
-		linearSVC__C=[0.1, 1, 10],
-		#randomforests__max_depth=[5, 10, None], 
-		#randomforests__n_estimators=[10, 50, 100], 
-		feature_selector__C=[0.1, 1, 10]
-		#feature_selector__score_func=[chi2],
-		#feature_selector__k=[5, 10, 'all'] 
-		)
-	grid_search = GridSearchCV(clf, param_grid=params)
-	grid_search.fit(X, y)
-	return grid_search
-=======
     t = time.mktime( datetime.datetime.strptime(value,'%d/%m/%y').timetuple())
     return df[key] >= t
 
@@ -208,7 +183,6 @@ def testing(X, y, X_holdout = None, y_holdout = None):
         grid_search = GridSearchCV(clf, param_grid=params, scoring = 'roc_auc')
     grid_search.fit(X, y)
     return grid_search
->>>>>>> b3261cb0e8a4d4725ef89fe09d1323b11999b167
 
 def performance(results, param1, param2):
     param1_vals = [x.parameters[param1] for x in results.grid_scores_]
