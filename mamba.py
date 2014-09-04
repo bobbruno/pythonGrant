@@ -77,8 +77,12 @@ def munge_data(df_orig):
     
     # Get the % of aussies
     numAussies = pd.get_dummies(df['Country.of.Birth.1'])
+    print numAussies
     numAussies['Grant.Application.ID'] = df['Grant.Application.ID']
+    print numAussies
     numAussies = pd.groupby(numAussies, 'Grant.Application.ID')[numAussies.columns].sum()
+    del numAussies['Grant.Application.ID']
+    print numAussies
     
     # We just imputed all values with NaN (no country info) to zero
     prcAussies = pd.DataFrame((numAussies['Australia'] / numAussies.sum(axis = 1)).fillna(0), columns = ['% Australians'])
