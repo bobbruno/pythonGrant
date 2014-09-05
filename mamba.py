@@ -132,7 +132,10 @@ def munge_data(df_orig):
     del finalDf['Grant.Application.ID_x']
     finalDf['Proc.Start.Date'] = finalDf['Start.date'].apply(lambda x:
                           time.mktime(datetime.datetime.strptime(x,'%d/%m/%y').timetuple()))
-   #splitting dataframe
+    #splitting dataframe
+    #m, b = 4.8261954316943646e-08, -53.597570965226083
+    #finalDf['Number.of.Unsuccessful.Grant.1']= finalDf['Number.of.Unsuccessful.Grant.1'] - (m  * finalDf['Proc.Start.Date'] +b)
+    
     mask = time_mask(finalDf)
     finalDf_test = finalDf[mask]
     finalDf_train = finalDf[-mask]
@@ -172,7 +175,7 @@ def testing(X, y, X_holdout = None, y_holdout = None):
     params = dict(
             #linearSVC__C=[0.1, 1, 10],
             randomforests__max_depth=[5, 10, None], 
-            randomforests__n_estimators=[10, 50, 100], 
+            randomforests__n_estimators=[10, 50, 100,1000], 
             #feature_selector__C=[0.1, 1, 10]
             #feature_selector__score_func=[chi2],
             #feature_selector__k=[5, 10, 'all'] 
