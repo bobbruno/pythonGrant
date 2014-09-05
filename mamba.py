@@ -181,9 +181,9 @@ def testing(X, y, X_holdout = None, y_holdout = None):
             #feature_selector__k=[5, 10, 'all'] 
             )
     if(X_holdout != None and y_holdout != None):
-        grid_search = GridSearchCV(clf, param_grid=params, cv=cv_custom, scoring = 'roc_auc')
+        grid_search = GridSearchCV(clf, param_grid=params, cv=cv_custom, scoring = 'roc_auc', n_jobs = 6)
     else:
-        grid_search = GridSearchCV(clf, param_grid=params, scoring = 'roc_auc')
+        grid_search = GridSearchCV(clf, param_grid=params, scoring = 'roc_auc', n_jobs = 6)
     grid_search.fit(X, y)
     return grid_search
 
